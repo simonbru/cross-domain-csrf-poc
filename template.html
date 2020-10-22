@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>Log</h2>
+    <div id="log"></div>
+  </body>
+
+  <script>
+    window.apiUrl = "{{ api_url }}";
+    window.useSecureCookie = "{{ use_secure_cookie }}";
+
+    function log(msg) {
+      document.querySelector("#log").innerHTML += `<p>${msg}</p>`;
+    }
+
+    async function main() {
+      try {
+        let response, content;
+        log(`API url: ${apiUrl}`);
+        log(`Use secure cookie: ${useSecureCookie}`);
+        log(`document.cookie: ${document.cookie}`);
+
+        log(`GET ${apiUrl}/set-csrf-cookie`);
+        response = await fetch(`${apiUrl}/set-csrf-cookie`, {
+          mode: "cors",
+          credentials: "include",
+        });
+        log(`Response status: ${response.status}`);
+        log(`document.cookie: ${document.cookie}`);
+        const csrfToken = /x-csrftoken=([^;]+)/.exec(document.cookie)[1];
+        log(`csrfToken: ${csrfToken}`);
+
+        log(`POST ${apiUrl}/check-csrf-token`);
+        response = await fetch(`${apiUrl}/check-csrf-token`, {
+          method: "POST",
+          mode: "cors",
+          credentials: "include",
+          headers: { "X-CSRFToken": csrfToken },
+        });
+        log(`Response status: ${response.status}`);
+        content = await response.text();
+        log(`Response body: ${content}`);
+
+        log("End of tests");
+      } catch (e) {
+        log(e);
+      }
+    }
+    main();
+  </script>
+</html>
