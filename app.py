@@ -34,9 +34,7 @@ def test_view():
 def set_cors_headers(response):
     response.set_header("Access-Control-Allow-Origin", options.origin)
     response.set_header("Access-Control-Allow-Credentials", "true")
-    response.set_header(
-        "Access-Control-Allow-Headers", "credentials, mode, X-CSRFToken"
-    )
+    response.set_header("Access-Control-Allow-Headers", "X-CSRFToken")
 
 
 @app.route("/set-csrf-cookie", method=["GET", "OPTIONS"])
